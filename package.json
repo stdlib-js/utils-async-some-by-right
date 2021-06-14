@@ -1,6 +1,6 @@
 {
   "name": "@stdlib/utils-async-some-by-right",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Test whether a collection contains at least `n` elements which pass a test implemented by a predicate function, iterating from right to left.",
   "license": "Apache-2.0",
   "author": {

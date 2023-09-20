@@ -18,6 +18,17 @@ limitations under the License.
 
 -->
 
+
+<details>
+  <summary>
+    About stdlib...
+  </summary>
+  <p>We believe in a future in which the web is a preferred environment for numerical computation. To help realize this future, we've built stdlib. stdlib is a standard library, with an emphasis on numerical and scientific computation, written in JavaScript (and C) for execution in browsers and in Node.js.</p>
+  <p>The library is fully decomposable, being architected in such a way that you can swap out and mix and match APIs and functionality to cater to your exact preferences and use cases.</p>
+  <p>When you use stdlib, you can be absolutely certain that you are using the most thorough, rigorous, well-written, studied, documented, tested, measured, and high-quality code out there.</p>
+  <p>To join us in bringing numerical computing to the web, get started by checking us out on <a href="https://github.com/stdlib-js/stdlib">GitHub</a>, and please consider <a href="https://opencollective.com/stdlib">financially supporting stdlib</a>. We greatly appreciate your continued support!</p>
+</details>
+
 # someByRightAsync
 
 [![NPM version][npm-image]][npm-url] [![Build Status][test-image]][test-url] [![Coverage Status][coverage-image]][coverage-url] <!-- [![dependencies][dependencies-image]][dependencies-url] -->
@@ -34,20 +45,30 @@ limitations under the License.
 
 <!-- Package usage documentation. -->
 
+<section class="installation">
 
+## Installation
+
+```bash
+npm install @stdlib/utils-async-some-by-right
+```
+
+Alternatively,
+
+-   To load the package in a website via a `script` tag without installation and bundlers, use the [ES Module][es-module] available on the [`esm` branch][esm-url].
+-   If you are using Deno, visit the [`deno` branch][deno-url].
+-   For use in Observable, or in browser/node environments, use the [Universal Module Definition (UMD)][umd] build available on the [`umd` branch][umd-url].
+
+The [branches.md][branches-url] file summarizes the available branches and displays a diagram illustrating their relationships.
+
+</section>
 
 <section class="usage">
 
 ## Usage
 
 ```javascript
-import someByRightAsync from 'https://cdn.jsdelivr.net/gh/stdlib-js/utils-async-some-by-right@deno/mod.js';
-```
-
-You can also import the following named exports from the package:
-
-```javascript
-import { factory } from 'https://cdn.jsdelivr.net/gh/stdlib-js/utils-async-some-by-right@deno/mod.js';
+var someByRightAsync = require( '@stdlib/utils-async-some-by-right' );
 ```
 
 #### someByRightAsync( collection, n, \[options,] predicate, done )
@@ -59,6 +80,12 @@ function predicate( value, next ) {
     setTimeout( onTimeout, value );
     function onTimeout() {
         console.log( value );
+        /* =>
+            1000
+            2500
+            3000
+        */
+
         next( null, false );
     }
 }
@@ -68,17 +95,12 @@ function done( error, bool ) {
         throw error;
     }
     console.log( bool );
+    // => false
 }
 
 var arr = [ 1000, 2500, 3000 ];
 
 someByRightAsync( arr, 2, predicate, done );
-/* =>
-    1000
-    2500
-    3000
-    false
-*/
 ```
 
 The function immediately stops processing `collection` elements and returns `true` for the test result upon receiving `n` truthy predicate result values.
@@ -99,19 +121,19 @@ function done( error, bool ) {
         throw error;
     }
     console.log( bool );
+    // => true
 }
 
 var arr = [ 1000, 2500, 3000 ];
 
 someByRightAsync( arr, 1, predicate, done );
-// => true
 ```
 
 The function accepts the following `options`:
 
 -   `limit`: the maximum number of pending invocations at any one time. Default: `infinity`.
 -   `series`: `boolean` indicating whether to sequentially invoke the `predicate` function for each `collection` element. If `true`, the function sets `options.limit=1`. Default: `false`.
--   `thisArg`: the execution context for `fcn`.
+-   `thisArg`: the execution context for `predicate`.
 
 By default, all elements are processed concurrently, which means that the function does **not** guarantee completion order. To process each `collection` element sequentially, set the `series` option to `true`.
 
@@ -120,6 +142,12 @@ function predicate( value, next ) {
     setTimeout( onTimeout, value );
     function onTimeout() {
         console.log( value );
+        /* =>
+            3000
+            2500
+            1000
+        */
+
         next( null, false );
     }
 }
@@ -129,6 +157,7 @@ function done( error, bool ) {
         throw error;
     }
     console.log( bool );
+    // => false
 }
 
 var arr = [ 1000, 2500, 3000 ];
@@ -138,12 +167,6 @@ var opts = {
 };
 
 someByRightAsync( arr, 2, opts, predicate, done );
-/* =>
-    3000
-    2500
-    1000
-    false
-*/
 ```
 
 To limit the maximum number of pending function invocations, set the `limit` option.
@@ -153,6 +176,12 @@ function predicate( value, next ) {
     setTimeout( onTimeout, value );
     function onTimeout() {
         console.log( value );
+        /* =>
+            2500
+            3000
+            1000
+        */
+
         next( null, false );
     }
 }
@@ -162,6 +191,7 @@ function done( error, bool ) {
         throw error;
     }
     console.log( bool );
+    // => false
 }
 
 var arr = [ 1000, 2500, 3000 ];
@@ -171,12 +201,6 @@ var opts = {
 };
 
 someByRightAsync( arr, 2, opts, predicate, done );
-/* =>
-    2500
-    3000
-    1000
-    false
-*/
 ```
 
 To set the execution context of the `predicate` function, set the `thisArg` option.
@@ -226,9 +250,21 @@ The actual number of provided arguments depends on function `length`. If the `pr
 ```javascript
 function predicate( value, i, collection, next ) {
     console.log( 'collection: %s. %d: %d', collection.join( ',' ), i, value );
+    /* =>
+        collection: 3000,2500,1000. 2: 3000
+        collection: 3000,2500,1000. 1: 2500
+        collection: 3000,2500,1000. 0: 1000
+    */
+
     setTimeout( onTimeout, value );
     function onTimeout() {
         console.log( value );
+        /* =>
+            1000
+            2500
+            3000
+        */
+
         next( null, false );
     }
 }
@@ -238,20 +274,12 @@ function done( error, bool ) {
         throw error;
     }
     console.log( bool );
+    // => false
 }
 
 var arr = [ 1000, 2500, 3000 ];
 
 someByRightAsync( arr, 2, predicate, done );
-/* =>
-    collection: 3000,2500,1000. 2: 3000
-    collection: 3000,2500,1000. 1: 2500
-    collection: 3000,2500,1000. 0: 1000
-    1000
-    2500
-    3000
-    false
-*/
 ```
 
 #### someByRightAsync.factory( \[options,] predicate )
@@ -279,7 +307,7 @@ var f = someByRightAsync.factory( predicate );
 var arr1 = [ 1000, 2500, 3000 ];
 
 f( arr1, 2, done );
-/* =>
+/* e.g., =>
     1000
     2500
     3000
@@ -289,7 +317,7 @@ f( arr1, 2, done );
 var arr2 = [ 100, 250, 300 ];
 
 f( arr2, 2, done );
-/* =>
+/* e.g., >
     100
     250
     300
@@ -330,8 +358,8 @@ The function accepts the same `options` as `someByRightAsync()`.
 
 ```javascript
 var resolve = require( 'path' ).resolve;
-import readFile from 'https://cdn.jsdelivr.net/gh/stdlib-js/fs-read-file@deno/mod.js';
-import someByRightAsync from 'https://cdn.jsdelivr.net/gh/stdlib-js/utils-async-some-by-right@deno/mod.js';
+var readFile = require( '@stdlib/fs-read-file' );
+var someByRightAsync = require( '@stdlib/utils-async-some-by-right' );
 
 var files = [
     resolve( __dirname, 'package.json' ),
@@ -406,7 +434,7 @@ someByRightAsync( files, 2, predicate, done );
 
 ## Notice
 
-This package is part of [stdlib][stdlib], a standard library with an emphasis on numerical and scientific computing. The library provides a collection of robust, high performance libraries for mathematics, statistics, streams, utilities, and more.
+This package is part of [stdlib][stdlib], a standard library for JavaScript and Node.js, with an emphasis on numerical and scientific computing. The library provides a collection of robust, high performance libraries for mathematics, statistics, streams, utilities, and more.
 
 For more information on the project, filing bug reports and feature requests, and guidance on how to develop [stdlib][stdlib], see the main project [repository][stdlib].
 
@@ -474,17 +502,17 @@ Copyright &copy; 2016-2023. The Stdlib [Authors][stdlib-authors].
 
 <!-- <related-links> -->
 
-[@stdlib/utils/async/any-by-right]: https://github.com/stdlib-js/utils-async-any-by-right/tree/deno
+[@stdlib/utils/async/any-by-right]: https://github.com/stdlib-js/utils-async-any-by-right
 
-[@stdlib/utils/async/every-by-right]: https://github.com/stdlib-js/utils-async-every-by-right/tree/deno
+[@stdlib/utils/async/every-by-right]: https://github.com/stdlib-js/utils-async-every-by-right
 
-[@stdlib/utils/async/for-each-right]: https://github.com/stdlib-js/utils-async-for-each-right/tree/deno
+[@stdlib/utils/async/for-each-right]: https://github.com/stdlib-js/utils-async-for-each-right
 
-[@stdlib/utils/async/none-by-right]: https://github.com/stdlib-js/utils-async-none-by-right/tree/deno
+[@stdlib/utils/async/none-by-right]: https://github.com/stdlib-js/utils-async-none-by-right
 
-[@stdlib/utils/async/some-by]: https://github.com/stdlib-js/utils-async-some-by/tree/deno
+[@stdlib/utils/async/some-by]: https://github.com/stdlib-js/utils-async-some-by
 
-[@stdlib/utils/some-by-right]: https://github.com/stdlib-js/utils-some-by-right/tree/deno
+[@stdlib/utils/some-by-right]: https://github.com/stdlib-js/utils-some-by-right
 
 <!-- </related-links> -->
 
